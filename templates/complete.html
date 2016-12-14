@@ -4,11 +4,8 @@
 <head>
     <title>Python Flask Bucket List App</title>
 
-
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
-
 
 </head>
 
@@ -27,18 +24,11 @@
 
         <div class="jumbotron">
             <h1>My Web App</h1>
-            <p class="lead"></p>
-            <p><a class="btn btn-lg btn-success" href="showSignUp" role="button">Sign up today</a>
-            </p>
+
+            {{sentiment_value}}
+
         </div>
 
-        <form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
-            <strong>Files:</strong><br>
-            <input id="file-picker" type="file" name="file" accept="text/html/*" multiple>
-            <div id="msg"></div>
-            <input type="submit" value="Upload!" id="upload-button">
-        </form>
-        <footer class="footer">
             <p>&copy; Conor Byrne 2016 almost 2017</p>
         </footer>
 
