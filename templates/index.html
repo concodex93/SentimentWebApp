@@ -18,26 +18,23 @@
         <div class="header">
             <nav>
                 <ul class="nav nav-pills pull-right">
-                    <li role="presentation" class="active"><a href="#">Home</a>
-                    </li>
                 </ul>
             </nav>
             <h3 class="text-muted">Python Flask App</h3>
         </div>
 
         <div class="jumbotron">
-            <h1>My Web App</h1>
+            <h2>WhatsApp Sentiment Calculator</h2>
             <p class="lead"></p>
-            <p><a class="btn btn-lg btn-success" href="showSignUp" role="button">Sign up today</a>
-            </p>
+                <!-- Input File -->
+                <form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+                    <input id="file-picker" type="file" name="file" accept="text/html/*" multiple>
+                    <input type="text" name="text">
+                    <div id="msg"></div>
+                    <input class="btn btn-lg btn-success" type="submit" value="Upload!" id="upload-button">
+                </form>
         </div>
 
-        <form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
-            <strong>Files:</strong><br>
-            <input id="file-picker" type="file" name="file" accept="text/html/*" multiple>
-            <div id="msg"></div>
-            <input type="submit" value="Upload!" id="upload-button">
-        </form>
         <footer class="footer">
             <p>&copy; Conor Byrne 2016 almost 2017</p>
         </footer>
