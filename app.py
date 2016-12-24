@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request
 import re
+import io
 
 from flask import flash
 from textblob import TextBlob
-from flask import redirect, url_for
+from flask import redirect
+from textblob.sentiments import NaiveBayesAnalyzer
 from werkzeug.utils import secure_filename
 import os
 
@@ -74,7 +76,7 @@ def allowed_file(filename):
 
 
 def read_file():
-    file = open(UPLOAD_FOLDER + "/" + "WhatsApp_Chat_with_Connie_3.txt", encoding="utf8")
+    file = io.open(UPLOAD_FOLDER + "/" + "WhatsApp_Chat_with_Connie_3.txt", encoding="utf-8")
     text = file.read()
     print(text)
 
@@ -110,15 +112,17 @@ def sentiment_eval(m_list1):
     for o in m_list1:
         if o.get_name() == name_to_analyze:
             text = text + o.get_message()
-            print(text)
+            #print(text)
 
     if text == "":
         value = error_message
-        print("X")
+        #print("X")
     else:
-        tb1 = TextBlob(text)
+        # test new sentmiment method for base value
+        test = "Today was the worst day ever. I made me cry and sucicidal"
+        tb1 = TextBlob(test, analyzer=NaiveBayesAnalyzer())
         value = tb1.sentiment
-        print("Y")
+        #print("Y")
     return value
 
 
