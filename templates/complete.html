@@ -3,6 +3,11 @@
 
 <head>
     <title>Python Flask Bucket List App</title>
+     <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Numeric JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+
 
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
@@ -23,9 +28,31 @@
         <div class="jumbotron">
             <h2>Result</h2>
 
-            {{sentiment_value}}
+            <p id="posID"> Positive: {{positive_val}} </p>
+            <p id ="negID"> Negative: {{negative_val}} </p>
 
         </div>
+
+        <div id="myDiv" style="width: 480px; height: 380px;">
+            <!-- PIE CHART -->
+        </div>
+
+         <script>
+        <!-- JAVASCRIPT CODE GOES HERE -->
+
+        var data = [{
+        values: [{{positive_val}},{{negative_val}} ],
+        labels: ['Positive', 'Negative'],
+        type: 'pie'
+        }];
+
+        var layout = {
+        height: 380,
+        width: 480
+        };
+
+        Plotly.newPlot('myDiv', data, layout);
+        </script>
 
             <p>&copy; Conor Byrne 2016 almost 2017</p>
         </footer>

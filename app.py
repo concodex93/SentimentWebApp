@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import re
 import io
+from collections import Counter
 
 from flask import flash
 from textblob import TextBlob
@@ -38,13 +39,12 @@ def main():
 
 @app.route('/upload/', methods=['GET', 'POST'])
 def upload():
-
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
             return redirect(request.url)
-        #print("A")
+        # print("A")
         file = request.files['file']
         # if user does not select file, browser also
         # submit a empty part without filename
@@ -56,16 +56,20 @@ def upload():
             filename = secure_filename(file.filename)
             text = read_file()
             m_list = split_at_regex(text)
+            common_dict = most_common_word(m_list)
+            print(common_dict[1])
             sentiment_value = sentiment_eval(m_list)
+            positive_val = round(sentiment_value[1], 2) * 100
+            negative_val = round(sentiment_value[2], 2) * 100
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            return render_template("complete.html", sentiment_value=sentiment_value)
+            return render_template("complete.html", positive_val=positive_val, negative_val=negative_val)
 
 
 @app.route('/', methods=['POST'])
 def my_form_post():
     text = request.form['text']
-    print(text)
+   # print(text)
 
     return text
 
@@ -78,7 +82,7 @@ def allowed_file(filename):
 def read_file():
     file = io.open(UPLOAD_FOLDER + "/" + "WhatsApp_Chat_with_Connie_3.txt", encoding="utf-8")
     text = file.read()
-    print(text)
+    #print(text)
 
     return text
 
@@ -96,14 +100,26 @@ def split_at_regex(text):
         whats_app = WhatsApp(name, message)
         whats_app_list.append(whats_app)
 
-        #print("name: " + str(name))
-        #print("message: " + str(message))
+        # print("name: " + str(name))
+        # print("message: " + str(message))
 
     return whats_app_list
 
 
-def sentiment_eval(m_list1):
+def most_common_word(regex_list):
+    each_word_list = []
+    for line in regex_list:
+        #print(line)
+        line_to_split = line.get_message().split()
+        for word in line_to_split:
+            each_word_list.append(word)
 
+    counter = Counter(each_word_list)
+    # Returns dictionary
+    return counter.most_common()
+
+
+def sentiment_eval(m_list1):
     name_to_analyze = my_form_post()
     print(name_to_analyze)
     text = ""
@@ -112,17 +128,17 @@ def sentiment_eval(m_list1):
     for o in m_list1:
         if o.get_name() == name_to_analyze:
             text = text + o.get_message()
-            #print(text)
+            # print(text)
 
     if text == "":
         value = error_message
-        #print("X")
+        # print("X")
     else:
         # test new sentmiment method for base value
         test = "Today was the worst day ever. I made me cry and sucicidal"
         tb1 = TextBlob(test, analyzer=NaiveBayesAnalyzer())
         value = tb1.sentiment
-        #print("Y")
+        # print("Y")
     return value
 
 
