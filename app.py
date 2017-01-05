@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request
 import re
-import io
 from collections import Counter
-
 from flask import flash
 from textblob import TextBlob
 from flask import redirect
@@ -15,6 +13,8 @@ ALLOWED_EXTENSIONS = set(['txt'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+name_to_analyze_dict = {}
 
 
 class WhatsApp:
@@ -54,22 +54,48 @@ def upload():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            text = read_file()
-            m_list = split_at_regex(text)
+
+            d_dir = os.path.join(os.getenv('USERPROFILE'), 'Downloads')
+            my_file = d_dir + '\\' + filename
+
+            with open(my_file) as f:
+                content = f.read().decode('utf-8')
+
+            m_list = split_at_regex(content)
+            # most common words dictionary
             common_dict = most_common_word(m_list)
-            print(common_dict[1])
+
+            most_common_val_1 = common_dict[0][1]
+            most_common_word_1 = common_dict[0][0]
+
+            most_common_val_2 = common_dict[1][1]
+            most_common_word_2 = common_dict[1][0]
+
+            most_common_val_3 = common_dict[2][1]
+            most_common_word_3 = common_dict[2][0]
+
+            most_common_val_4 = common_dict[3][1]
+            most_common_word_4 = common_dict[3][0]
+
+            most_common_val_5 = common_dict[4][1]
+            most_common_word_5 = common_dict[4][0]
+            # sentiment value
             sentiment_value = sentiment_eval(m_list)
             positive_val = round(sentiment_value[1], 2) * 100
             negative_val = round(sentiment_value[2], 2) * 100
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            return render_template("complete.html", positive_val=positive_val, negative_val=negative_val)
+            return render_template("complete.html", positive_val=positive_val, negative_val=negative_val,
+                                   most_common_val_1=most_common_val_1, most_common_word_1=most_common_word_1,
+                                   most_common_val_2=most_common_val_2, most_common_word_2=most_common_word_2,
+                                   most_common_val_3=most_common_val_3, most_common_word_3=most_common_word_3,
+                                   most_common_val_4=most_common_val_4, most_common_word_4=most_common_word_4,
+                                   most_common_val_5=most_common_val_5, most_common_word_5=most_common_word_5)
 
 
 @app.route('/', methods=['POST'])
 def my_form_post():
     text = request.form['text']
-   # print(text)
+    # print(text)
 
     return text
 
@@ -77,14 +103,6 @@ def my_form_post():
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
-
-def read_file():
-    file = io.open(UPLOAD_FOLDER + "/" + "WhatsApp_Chat_with_Connie_3.txt", encoding="utf-8")
-    text = file.read()
-    #print(text)
-
-    return text
 
 
 def split_at_regex(text):
@@ -108,11 +126,12 @@ def split_at_regex(text):
 
 def most_common_word(regex_list):
     each_word_list = []
+    name_to_analyze = my_form_post()
     for line in regex_list:
-        #print(line)
-        line_to_split = line.get_message().split()
-        for word in line_to_split:
-            each_word_list.append(word)
+        if line.get_name() == name_to_analyze:
+            line_to_split = line.get_message().split()
+            for word in line_to_split:
+                each_word_list.append(word)
 
     counter = Counter(each_word_list)
     # Returns dictionary
@@ -120,27 +139,25 @@ def most_common_word(regex_list):
 
 
 def sentiment_eval(m_list1):
-    name_to_analyze = my_form_post()
-    print(name_to_analyze)
-    text = ""
-    error_message = "The name you entered was not found :/"
 
+    name_to_analyze = my_form_post()
+    text = ""
+    counter = 1
+    error_message = "The name you entered was not found :/"
     for o in m_list1:
         if o.get_name() == name_to_analyze:
-            text = text + o.get_message()
-            # print(text)
+            text += o.get_message()
+            counter += 1
+        if counter == 60:
+            break
+    tb1 = TextBlob(text, analyzer=NaiveBayesAnalyzer())
+    value = tb1.sentiment
 
     if text == "":
-        value = error_message
-        # print("X")
+        return error_message
     else:
-        # test new sentmiment method for base value
-        test = "Today was the worst day ever. I made me cry and sucicidal"
-        tb1 = TextBlob(test, analyzer=NaiveBayesAnalyzer())
-        value = tb1.sentiment
-        # print("Y")
-    return value
 
+        return value
 
 if __name__ == '__main__':
     app.run(debug=True)

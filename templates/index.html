@@ -20,18 +20,30 @@
                 <ul class="nav nav-pills pull-right">
                 </ul>
             </nav>
-            <h3 class="text-muted">Python Flask App</h3>
+            <h3 class="text-muted">WhatsApp Analyzer</h3>
         </div>
 
         <div class="jumbotron">
-            <h2>WhatsApp Sentiment Calculator</h2>
+            <h3>How to use ... </h3>
+
+            1: Email WhatsApp chat to your own personal email<br>
+            2: Download this file to your Downloads folder<br>
+            3: Upload file using the <em>upload</em> button<br>
+            4: Enter the name of the contact you want to analyse<br>
+            5: Click submit button<br>
             <p class="lead"></p>
                 <!-- Input File -->
                 <form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
-                    <input id="file-picker" type="file" name="file" accept="text/html/*" multiple>
-                    <input type="text" name="text">
+                    <div class="form-group">
+                        <input id="file-picker" class="form-control" type="file" name="file" accept="text/html/*" multiple>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="name">Name of Contact:</label>
+                      <input id ="name" class="form-control" type="text" name="text">
+                    </div>
                     <div id="msg"></div>
-                    <input class="btn btn-lg btn-success" type="submit" value="Upload!" id="upload-button">
+                    <input class="btn btn-lg btn-default" type="submit" value="Submit" id="upload-button">
                 </form>
         </div>
 
